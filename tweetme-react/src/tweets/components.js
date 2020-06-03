@@ -1,6 +1,29 @@
 import React, {useState, useEffect} from 'react'
 import {loadTweets} from './lookup'
 
+export function TweetsComponent(props) {
+  const textAreaRef = React.createRef()
+  const handleSubmit = (event) => {
+    event.preventDefault()
+    const newVal = textAreaRef.current.value
+    textAreaRef.current.value = ''
+  }
+  return <React.Fragment>
+
+    <div className="row my-3 text-center mx-auto w-50">
+  <div className='col-12 '>
+      <form onSubmit={handleSubmit}>
+        <textarea  ref={textAreaRef} required={true} className='form-control' name='tweet'>
+
+        </textarea>
+        <button type='submit' className='btn btn-primary my-3'>Tweet</button>
+      </form>
+    </div>
+    </div>
+    <TweetsList />
+    </React.Fragment>
+}
+
 export function TweetsList(props) {
     const [tweets, setTweets] = useState([])
     useEffect(() => {
@@ -14,7 +37,7 @@ export function TweetsList(props) {
     }, [])
   
     return tweets.map((item, index) => {
-      return <Tweet tweet={item} key={index} className='m-5 p-5 border bg-white text-dark' />
+      return <Tweet tweet={item} key={index} className='mx-auto w-50 my-5 p-5 border bg-white text-dark' />
     })
 }
 
