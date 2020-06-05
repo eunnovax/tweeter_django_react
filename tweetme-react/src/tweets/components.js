@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import {loadTweets} from './lookup'
+import {loadTweets, createTweet} from './lookup'
 
 export function TweetsComponent(props) {
   const textAreaRef = React.createRef()
@@ -9,11 +9,19 @@ export function TweetsComponent(props) {
     const newVal = textAreaRef.current.value
     let tempNewTweets = [...newTweets]
     // change this to a server side call
-    tempNewTweets = [{
-      content: newVal,
-      likes: 0,
-      id: 1234
-    }, ...tempNewTweets]
+    createTweet(newVal, (response, status) => {
+      if (status === 201) {
+        tempNewTweets.unshift(response)
+      } else {
+        console.log(response) 
+        alert("An error occured please try again")
+      }
+    })
+    // tempNewTweets = [{
+    //   content: newVal,
+    //   likes: 0,
+    //   id: 1234
+    // }, ...tempNewTweets]
     setNewTweets(tempNewTweets)
     textAreaRef.current.value = ''
   }
@@ -36,6 +44,7 @@ export function TweetsComponent(props) {
 export function TweetsList(props) {
     const [tweetsInit, setTweetsInit] = useState([])
     const [tweets, setTweets] = useState([])
+    const [tweetsDidSet, setTweetsDidSet] = useState(false)
     // setTweetsInit([...props.newTweets].concat(tweetsInit))
     useEffect(() => {
       const final = [...props.newTweets].concat(tweetsInit)
@@ -44,13 +53,18 @@ export function TweetsList(props) {
       }
     }, [props.newTweets, tweetsInit, tweets])
     useEffect(() => {
-      const myCallback = (response, status) => {
-        // console.log(response, status)
-        if (status === 200) {
-          setTweetsInit(response)
+      if (tweetsDidSet === false) {
+        const myCallback = (response, status) => {
+          // console.log(response, status)
+          if (status === 200) {
+            setTweetsInit(response)
+            setTweetsDidSet(true)
+          } else {
+            alert("There was an error")
+          }
         }
+        loadTweets(myCallback)
       }
-      loadTweets(myCallback)
     }, [tweetsInit])
   
     return tweets.map((item, index) => {
