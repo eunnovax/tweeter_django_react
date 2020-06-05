@@ -3,41 +3,58 @@ import {loadTweets} from './lookup'
 
 export function TweetsComponent(props) {
   const textAreaRef = React.createRef()
+  const [newTweets, setNewTweets] = useState([])
   const handleSubmit = (event) => {
     event.preventDefault()
     const newVal = textAreaRef.current.value
+    let tempNewTweets = [...newTweets]
+    // change this to a server side call
+    tempNewTweets = [{
+      content: newVal,
+      likes: 0,
+      id: 1234
+    }, ...tempNewTweets]
+    setNewTweets(tempNewTweets)
     textAreaRef.current.value = ''
   }
   return <React.Fragment>
 
     <div className="row my-3 text-center mx-auto w-50">
-  <div className='col-12 '>
-      <form onSubmit={handleSubmit}>
-        <textarea  ref={textAreaRef} required={true} className='form-control' name='tweet'>
+      <div className='col-12 '>
+        <form onSubmit={handleSubmit}>
+          <textarea  ref={textAreaRef} required={true} className='form-control' name='tweet'>
 
-        </textarea>
-        <button type='submit' className='btn btn-primary my-3'>Tweet</button>
-      </form>
+          </textarea>
+          <button type='submit' className='btn btn-primary my-3'>Tweet</button>
+        </form>
+      </div>
     </div>
-    </div>
-    <TweetsList />
+    <TweetsList newTweets={newTweets} />
     </React.Fragment>
 }
 
 export function TweetsList(props) {
+    const [tweetsInit, setTweetsInit] = useState([])
     const [tweets, setTweets] = useState([])
+    // setTweetsInit([...props.newTweets].concat(tweetsInit))
+    useEffect(() => {
+      const final = [...props.newTweets].concat(tweetsInit)
+      if (final.length !== tweets.length) {
+        setTweets(final)
+      }
+    }, [props.newTweets, tweetsInit, tweets])
     useEffect(() => {
       const myCallback = (response, status) => {
         // console.log(response, status)
         if (status === 200) {
-          setTweets(response)
+          setTweetsInit(response)
         }
       }
       loadTweets(myCallback)
-    }, [])
+    }, [tweetsInit])
   
     return tweets.map((item, index) => {
-      return <Tweet tweet={item} key={index} className='mx-auto w-50 my-5 p-5 border bg-white text-dark' />
+      return <Tweet tweet={item} key={index} className='mx-auto w-50 my-5 p-5 border bg-white text-dark text-center' />
     })
 }
 
