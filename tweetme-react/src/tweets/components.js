@@ -65,7 +65,7 @@ export function TweetsList(props) {
         }
         loadTweets(myCallback)
       }
-    }, [tweetsInit])
+    }, [tweetsInit, tweetsDidSet, setTweetsDidSet])
   
     return tweets.map((item, index) => {
       return <Tweet tweet={item} key={index} className='mx-auto w-50 my-5 p-5 border bg-white text-dark text-center' />
