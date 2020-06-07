@@ -1,28 +1,28 @@
 import React, {useState, useEffect} from 'react'
-import {loadTweets, createTweet} from './lookup'
+import {apiTweetList, apiTweetCreate} from './lookup.js'
 
 export function TweetsComponent(props) {
   const textAreaRef = React.createRef()
   const [newTweets, setNewTweets] = useState([])
+
+  const handleBackendUpdate = (response, status) => {
+    //backend api response handler
+    let tempNewTweets = [...newTweets]
+    console.log(response)
+    if (status === 201) {
+      tempNewTweets.unshift(response)
+      setNewTweets(tempNewTweets)
+    } else {
+      console.log(response) 
+      alert("An error occured please try again")
+    }
+  }
+
   const handleSubmit = (event) => {
     event.preventDefault()
     const newVal = textAreaRef.current.value
-    let tempNewTweets = [...newTweets]
-    // change this to a server side call
-    createTweet(newVal, (response, status) => {
-      if (status === 201) {
-        tempNewTweets.unshift(response)
-      } else {
-        console.log(response) 
-        alert("An error occured please try again")
-      }
-    })
-    // tempNewTweets = [{
-    //   content: newVal,
-    //   likes: 0,
-    //   id: 1234
-    // }, ...tempNewTweets]
-    setNewTweets(tempNewTweets)
+    //backend api request
+    apiTweetCreate(newVal, handleBackendUpdate)
     textAreaRef.current.value = ''
   }
   return <React.Fragment>
@@ -54,7 +54,7 @@ export function TweetsList(props) {
     }, [props.newTweets, tweetsInit, tweets])
     useEffect(() => {
       if (tweetsDidSet === false) {
-        const myCallback = (response, status) => {
+        const handleTweetListLookup = (response, status) => {
           // console.log(response, status)
           if (status === 200) {
             setTweetsInit(response)
@@ -63,7 +63,7 @@ export function TweetsList(props) {
             alert("There was an error")
           }
         }
-        loadTweets(myCallback)
+        apiTweetList(handleTweetListLookup)
       }
     }, [tweetsInit, tweetsDidSet, setTweetsDidSet])
   

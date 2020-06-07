@@ -15,7 +15,7 @@ function getCookie(name) {
 }
 
 
-function lookup(method, endpoint, callback, data) {
+export function backendLookup(method, endpoint, callback, data) {
   let jsonData;
   if (data) {
     jsonData = JSON.stringify(data)
@@ -24,7 +24,7 @@ function lookup(method, endpoint, callback, data) {
   const url = `http://localhost:8000/api${endpoint}`
   xhr.responseType = "json"
   const csrftoken = getCookie('csrftoken');
-  console.log('csrf token', csrftoken)
+  // console.log('csrf token', csrftoken)
   xhr.open(method, url)
   xhr.setRequestHeader("Content-Type", "application/json")
   if (csrftoken) {
@@ -42,10 +42,3 @@ function lookup(method, endpoint, callback, data) {
   xhr.send(jsonData) //triggers the request
 }
 
-export function createTweet(newTweet, callback) {
-  lookup("POST", "/tweets/create/", callback, {content: newTweet})
-}
-
-export const loadTweets = (callback) => {
-  lookup("GET", "/tweets/", callback)
-}
