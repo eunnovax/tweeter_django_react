@@ -4,12 +4,13 @@ import './App.css';
 import {TweetsComponent} from './tweets'
 
 
-function App() {
-  
+function App(props) {
+  // const {username} = props.username
+  console.log(props)
   return (
     <React.Fragment>
     
-    <TweetsComponent />
+    <TweetsComponent props={props} />
     </React.Fragment>
   );
 }

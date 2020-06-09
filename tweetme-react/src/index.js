@@ -4,12 +4,13 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
+const e = React.createElement
 const appEl = document.getElementById('root')
 if (appEl) {
   ReactDOM.render(
     <React.StrictMode>
-      <App />
-    </React.StrictMode>,
+      {e(App, appEl.dataset)}
+    </React.StrictMode>, 
     appEl
   );  
 }
